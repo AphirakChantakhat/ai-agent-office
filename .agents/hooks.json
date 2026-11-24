@@ -1,0 +1,43 @@
+{
+  "multi-model-orchestrator": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node orchestrator/hooks/pre_invocation.js",
+        "timeout": 10
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "invoke_subagent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node orchestrator/hooks/pre_subagent.js",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "invoke_subagent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node orchestrator/hooks/post_subagent.js",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node orchestrator/hooks/stop_failover.js",
+        "timeout": 10
+      }
+    ]
+  }
+}

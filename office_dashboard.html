@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chantakhat A. • Autonomous AI Engineering Operations Console</title>
+  <script>
+    window.tailwind = {
+      darkMode: 'class'
+    };
+  </script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --border-color: #e2e8f0;
+      
+      --sign-bg-standby: rgba(255, 255, 255, 0.94);
+      --sign-border-standby: #cbd5e1;
+      --sign-text-sub: #64748b;
+      
+      --banner-bg: rgba(255, 255, 255, 0.98);
+      --banner-text: #0f172a;
+      --banner-border: #2563eb;
+      --banner-arrow: rgba(255, 255, 255, 0.98);
+
+      --log-console-bg: #f8fafc;
+      --log-console-border: #e2e8f0;
+      --log-console-text: #0f172a;
+
+      --room-lit-bg: radial-gradient(ellipse at 50% 45%, rgba(254, 240, 138, 0.35) 0%, rgba(59, 130, 246, 0.12) 70%, transparent 100%);
+      --room-done-bg: radial-gradient(ellipse at 50% 45%, rgba(187, 247, 208, 0.4) 0%, rgba(16, 185, 129, 0.15) 70%, transparent 100%);
+    }
+
+    html.dark {
+      --bg-primary: #05070c;
+      --bg-card: #0a0d14;
+      --bg-subtle: #0f1420;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --border-color: #1a2233;
+
+      --sign-bg-standby: rgba(10, 13, 20, 0.92);
+      --sign-border-standby: rgba(148, 163, 184, 0.25);
+      --sign-text-sub: #94a3b8;
+
+      --banner-bg: rgba(10, 13, 20, 0.97);
+      --banner-text: #f8fafc;
+      --banner-border: rgba(59, 130, 246, 0.65);
+      --banner-arrow: rgba(10, 13, 20, 0.97);
+
+      --log-console-bg: #07090e;
+      --log-console-border: #1a2233;
+      --log-console-text: #f8fafc;
+
+      --room-lit-bg: radial-gradient(ellipse at 50% 45%, rgba(255, 250, 210, 0.35) 0%, rgba(59, 130, 246, 0.18) 65%, transparent 100%);
+      --room-done-bg: radial-gradient(ellipse at 50% 45%, rgba(34, 197, 94, 0.3) 0%, rgba(16, 185, 129, 0.15) 65%, transparent 100%);
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-family: -apple-system, BlinkMacSystemFont, 'Geist', 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+      letter-spacing: -0.01em;
+    }
+
+    /* Clean Diorama Container */
+    #office-stage-wrapper {
+      container-type: inline-size;
+      container-name: diorama;
+      width: 100%;
+      max-width: 1024px;
+      margin: 0 auto;
+    }
+
+    #office-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1024 / 572;
+      background: #020617;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--border-color);
+      user-select: none;
+    }
+
+    #office-img {
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      filter: none;
+    }
+
+    /* Seamless Room Overlays */
+    .room-overlay {
+      position: absolute;
+      border-radius: 20px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+      cursor: pointer;
+      border: none !important;
+    }
+
+    .room-dark {
+      background: transparent !important;
+      opacity: 1 !important;
+      box-shadow: none !important;
+    }
+
+    .room-lit {
+      background: var(--room-lit-bg) !important;
+      opacity: 1;
+      filter: saturate(1.15) brightness(1.08);
+      box-shadow: 0 0 45px rgba(254, 240, 138, 0.25);
+    }
+
+    .room-done {
+      background: var(--room-done-bg) !important;
+      opacity: 1;
+      filter: saturate(1.15) brightness(1.08);
+      box-shadow: 0 0 45px rgba(34, 197, 94, 0.28);
+    }
+
+    /* ========================================================= */
+    /* 🏷️ WORLD-CLASS MINIMALIST DEPARTMENT SIGNBOARDS          */
+    /* ========================================================= */
+    .dept-signboard {
+      position: absolute;
+      z-index: 38;
+      display: flex;
+      align-items: center;
+      gap: 0.5cqw;
+      padding: 0.3cqw 0.7cqw 0.3cqw 0.5cqw;
+      border-radius: 8px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .dept-signboard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+    }
+
+    .dept-signboard.is-standby {
+      background: var(--sign-bg-standby);
+      border: 1px solid var(--sign-border-standby);
+    }
+
+    .dept-signboard.is-working {
+      background: rgba(10, 13, 20, 0.96);
+      border: 1px solid #10b981;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35), 0 4px 15px rgba(0,0,0,0.4);
+    }
+    html:not(.dark) .dept-signboard.is-working {
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid #059669;
+      box-shadow: 0 0 16px rgba(5, 150, 105, 0.25), 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .dept-signboard.is-done {
+      background: rgba(10, 13, 20, 0.96);
+      border: 1px solid #06b6d4;
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.35), 0 4px 15px rgba(0,0,0,0.4);
+    }
+    html:not(.dark) .dept-signboard.is-done {
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid #0891b2;
+      box-shadow: 0 0 16px rgba(8, 145, 178, 0.25), 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .dept-icon-box {
+      width: clamp(18px, 2.2cqw, 24px);
+      height: clamp(18px, 2.2cqw, 24px);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dept-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .dept-title {
+      font-size: clamp(8.5px, 1.0cqw, 11px);
+      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    .dept-sub {
+      font-size: clamp(7.5px, 0.85cqw, 9.5px);
+      color: var(--sign-text-sub);
+      font-weight: 600;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      line-height: 1.1;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .model-badge-primary {
+      color: #0284c7;
+      font-weight: 700;
+    }
+    html.dark .model-badge-primary {
+      color: #38bdf8;
+    }
+    .model-badge-fallback {
+      color: #d97706;
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 0 3px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    html.dark .model-badge-fallback {
+      color: #fbbf24;
+    }
+
+    .dept-status-pill {
+      font-size: clamp(7.5px, 0.85cqw, 9px);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 0.15cqw 0.5cqw;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 0.2cqw;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    .pill-standby {
+      background: var(--bg-subtle);
+      color: var(--text-dim);
+      border: 1px solid var(--border-color);
+    }
+    .pill-working {
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    html.dark .pill-working {
+      color: #34d399;
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+    .pill-done {
+      background: rgba(6, 182, 212, 0.15);
+      color: #0891b2;
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+    html.dark .pill-done {
+      color: #22d3ee;
+      border-color: rgba(34, 211, 238, 0.4);
+    }
+
+    @container diorama (max-width: 550px) {
+      .dept-sub { display: none; }
+      .dept-signboard { padding: 2px 5px; }
+    }
+
+    /* ========================================================= */
+    /* ⚡ REFINED DESK STATUS PULSES (ZERO-EMOJI)                */
+    /* ========================================================= */
+
+    /* Subtle Breathing LED in Standby */
+    @keyframes breathing-pulse {
+      0%, 100% { opacity: 0.35; transform: scale(0.9); }
+      50% { opacity: 0.95; transform: scale(1.15); box-shadow: 0 0 10px rgba(148, 163, 184, 0.6); }
+    }
+    .sleep-indicator {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 4.5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(7.5px, 0.85cqw, 9.5px);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(8px);
+      padding: 1.5px 6px;
+      border-radius: 9999px;
+      z-index: 35;
+      pointer-events: none;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .sleep-indicator::before {
+      content: '';
+      width: 4.5px;
+      height: 4.5px;
+      border-radius: 50%;
+      background: #64748b;
+      animation: breathing-pulse 2.8s infinite ease-in-out;
+    }
+
+    /* Monitor Screen Glow */
+    @keyframes monitor-flicker {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.05); }
+    }
+    .desk-screen-glow {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(147, 197, 253, 0.75) 0%, rgba(59, 130, 246, 0.35) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 25;
+      display: none;
+      animation: monitor-flicker 1.8s infinite ease-in-out;
+    }
+    .is-working-mode .desk-screen-glow,
+    .is-done-mode .desk-screen-glow {
+      display: block;
+    }
+    .is-done-mode .desk-screen-glow {
+      background: radial-gradient(ellipse at center, rgba(167, 243, 208, 0.8) 0%, rgba(16, 185, 129, 0.4) 50%, transparent 80%);
+    }
+
+    /* Monospace HUD Terminal Tag */
+    @keyframes hud-sparkle {
+      0% { opacity: 0; transform: translateY(0) scale(0.8); }
+      50% { opacity: 1; transform: translateY(-6px) scale(1.02); }
+      100% { opacity: 0; transform: translateY(-14px) scale(0.9); }
+    }
+    .desk-typing-spark {
+      position: absolute;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(7.5px, 0.85cqw, 9.5px);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #0284c7;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 1px 5px;
+      border-radius: 4px;
+      pointer-events: none;
+      z-index: 35;
+      display: none;
+      animation: hud-sparkle 1.1s infinite ease-out;
+      box-shadow: 0 0 8px rgba(2, 132, 199, 0.4);
+      user-select: none;
+    }
+    html.dark .desk-typing-spark {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    .is-working-mode .desk-typing-spark {
+      display: block;
+    }
+
+    .is-working-mode .sleep-indicator,
+    .is-done-mode .sleep-indicator {
+      display: none !important;
+    }
+
+    /* ========================================================= */
+    /* 💬 ENTERPRISE HUD TASK BANNER                             */
+    /* ========================================================= */
+    .task-banner {
+      position: absolute;
+      z-index: 45;
+      width: clamp(160px, 24cqw, 250px);
+      text-align: center;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      user-select: none;
+    }
+    .task-banner-inner {
+      background: var(--banner-bg);
+      border: 1px solid var(--banner-border);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 12px rgba(59, 130, 246, 0.15);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: clamp(8px, 0.9cqw, 10.5px);
+      line-height: 1.35;
+      color: var(--banner-text);
+      font-weight: 600;
+      font-family: -apple-system, BlinkMacSystemFont, 'Geist', 'Inter', sans-serif;
+    }
+    .task-banner-inner::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 5px 5px;
+      border-style: solid;
+      border-color: transparent transparent var(--banner-arrow);
+    }
+
+    /* Ambient Micro FX */
+    @keyframes v-led {
+      0%, 100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.3); filter: drop-shadow(0 0 4px currentColor); }
+    }
+    .v-led { position: absolute; width: 3px; height: 3px; border-radius: 1px; pointer-events: none; }
+    .v-led-green { background: #10b981; color: #10b981; animation: v-led 1.1s infinite ease-in-out; }
+    .v-led-blue  { background: #38bdf8; color: #38bdf8; animation: v-led 1.6s infinite ease-in-out 0.4s; }
+    .v-led-amber { background: #f59e0b; color: #f59e0b; animation: v-led 0.85s infinite ease-in-out 0.7s; }
+
+    @keyframes v-steam {
+      0% { transform: translateY(0) scaleX(0.7); opacity: 0; }
+      40% { opacity: 0.65; }
+      80% { opacity: 0.3; }
+      100% { transform: translateY(-16px) scaleX(1.7); opacity: 0; }
+    }
+    .v-steam-puff {
+      position: absolute; width: 3px; height: 9px;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, transparent 80%);
+      border-radius: 50%; filter: blur(1px); pointer-events: none;
+      animation: v-steam 2.2s infinite ease-out;
+    }
+
+    @keyframes cat-sleep {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05) translateY(-1px); }
+    }
+    .v-cat { position: absolute; pointer-events: none; animation: cat-sleep 3.8s infinite ease-in-out; }
+
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+    }
+  </style>
+</head>
+<body class="antialiased p-3 sm:p-4 md:p-6 min-h-screen">
+
+  <div class="max-w-6xl mx-auto space-y-3 sm:space-y-4">
+
+    <!-- ========================================================= -->
+    <!-- 🏢 GLOBAL APPLICATION HEADER (VERCEL / LINEAR STYLE)      -->
+    <!-- ========================================================= -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between border rounded-xl p-3 sm:p-4 shadow-sm gap-3 sm:gap-4 transition-colors" style="background-color: var(--bg-card); border-color: var(--border-color);">
+      <div class="flex items-center gap-3">
+        <!-- Monogram Badge -->
+        <div class="w-10 h-10 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-white font-mono font-bold text-sm tracking-wider shadow-inner">
+          CA
+        </div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 class="text-sm sm:text-base font-bold font-mono tracking-tight" style="color: var(--text-main);">
+              CHANTAKHAT A. // AI TELEMETRY CONSOLE
+            </h1>
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-mono text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              SYSTEM ONLINE
+            </span>
+          </div>
+          <p class="text-[11px] sm:text-xs font-medium" style="color: var(--text-muted);">
+            Autonomous 6-Role Engineering Swarm • Hybrid Waterfall Execution Architecture
+          </p>
+        </div>
+      </div>
+
+      <!-- Segmented Controls (Linear Style) -->
+      <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap text-xs font-mono font-semibold">
+        <!-- Sound Toggle -->
+        <button id="sound-toggle-btn" onclick="toggleSound()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all hover:bg-slate-100 dark:hover:bg-slate-800" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);">
+          <span id="sound-icon-box">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </span>
+          <span id="sound-text">AUDIO ON</span>
+        </button>
+
+        <!-- Animation Details Toggle -->
+        <button id="anim-toggle-btn" onclick="toggleAnimationDetails()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all hover:bg-slate-100 dark:hover:bg-slate-800" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);">
+          <span id="anim-icon-box">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+          </span>
+          <span id="anim-text">FX ON</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="theme-toggle-btn" onclick="toggleTheme()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all hover:bg-slate-100 dark:hover:bg-slate-800" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);">
+          <span id="theme-icon-box">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </span>
+          <span id="theme-text">DARK</span>
+        </button>
+
+        <!-- Stream Status Indicator -->
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border font-mono text-[11px]" style="background-color: var(--bg-subtle); border-color: var(--border-color); color: var(--text-muted);">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="sync-status">STREAM ACTIVE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========================================================= -->
+    <!-- 🎯 DIRECTIVE & TELEMETRY HUD CARD                         -->
+    <!-- ========================================================= -->
+    <div id="prompt-tracker-box" class="border rounded-xl p-3 sm:p-4 shadow-sm transition-all" style="background-color: var(--bg-card); border-color: var(--border-color);">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 mb-2 border-b" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-[11px] font-mono font-bold tracking-wider text-slate-500 dark:text-slate-400">
+            CURRENT DIRECTIVE
+          </span>
+          <span id="prompt-status-badge" class="px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span id="prompt-status-text">DIRECTIVE VERIFIED // COMPLETED</span>
+          </span>
+          <span id="session-model-badge" class="px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/30">
+            <span>AUTO-ROUTER: OPUS 5.5 / SONNET 5.5 / ARGON 4 / FLASH 3.8</span>
+          </span>
+        </div>
+        <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 flex items-center gap-2">
+          <span id="prompt-time">TIMESTAMP: 10:46:30 UTC+7</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex-1 font-mono">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-0.5">// INSTRUCTION:</div>
+          <div id="prompt-content-text" class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">
+            "สั่งปรับปรุงแท็บ CLCH - Face: transNo ต้องสร้างใหม่ และเปลี่ยนเลขเป็น 24.x และ ack เป็น 25.x"
+          </div>
+          <div id="prompt-summary-text" class="text-[11px] text-slate-600 dark:text-slate-400 mt-1 font-sans font-medium">
+            Summary: ตัด transNo เก่าทิ้ง, สร้าง transNo (Generated) typeID=CH01, รีนัมเบอร์ 24.1-24.9 และ Ack 25.1-25.8 ตรวจสอบ XML ผ่าน 100%
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap text-xs font-mono font-bold">
+          <!-- Roster Counters -->
+          <span id="count-working" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>ACTIVE: 0</span>
+          </span>
+          <span id="count-done" class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+            VERIFIED: 6
+          </span>
+          <span id="count-idle" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+            IDLE: 0
+          </span>
+          <button onclick="runSprintDemoSimulation()" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            <span>SIMULATE PIPELINE</span>
+          </button>
+          <button onclick="openOutcomeModal()" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-sm" title="เปิดหน้าต่าง Outcome Tracking รายวัน">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>OUTCOME TRACKING</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 📊 LINEAR-STYLE WATERFALL PIPELINE BAR                    -->
+    <!-- ========================================================= -->
+    <section class="border rounded-xl p-3 sm:p-4 shadow-sm" style="background-color: var(--bg-card); border-color: var(--border-color);">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider" style="color: var(--text-muted);">
+          EXECUTION PIPELINE
+        </span>
+        <span id="phase-badge" class="text-[11px] font-mono px-2 py-0.5 rounded font-bold transition-all bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+          ALL 5 PIPELINE PHASES VERIFIED
+        </span>
+      </div>
+      <div class="grid grid-cols-5 gap-1.5 sm:gap-2 text-center text-[10px] sm:text-xs font-mono font-bold">
+        <div id="step-1" class="p-2 rounded-lg border border-[var(--border-color)] bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 transition-all">01 PLAN</div>
+        <div id="step-2" class="p-2 rounded-lg border border-[var(--border-color)] bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 transition-all">02 ARCHITECT</div>
+        <div id="step-3" class="p-2 rounded-lg border border-[var(--border-color)] bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 transition-all">03 CODE & QA</div>
+        <div id="step-4" class="p-2 rounded-lg border border-[var(--border-color)] bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 transition-all">04 AUDIT & SEC</div>
+        <div id="step-5" class="p-2 rounded-lg border border-[var(--border-color)] bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 transition-all">05 RELEASE</div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 🎮 MAIN 3D VOXEL DIORAMA STAGE (CLEAN 1080P)               -->
+    <!-- ========================================================= -->
+    <div id="office-stage-wrapper">
+      <div id="office-stage">
+
+        <!-- Base 3D Voxel Art Office (Pure 1080p Full HD) -->
+        <img src="office_voxel.png?v=3" alt="Chantakhat A. 3D Voxel AI Office" class="w-full h-full block object-cover select-none pointer-events-none" id="office-img">
+
+        <!-- Ambient Micro FX -->
+        <div id="ambient-layers">
+          <div class="v-steam-puff" style="left: 23.2%; top: 34.0%;"></div>
+          <div class="v-steam-puff" style="left: 48.0%; top: 81.5%; animation-delay: 1.2s;"></div>
+          <div class="v-led v-led-green" style="left: 48.2%; top: 72.0%;"></div>
+          <div class="v-led v-led-blue"  style="left: 51.0%; top: 73.5%;"></div>
+          <div class="v-led v-led-amber" style="left: 53.5%; top: 75.0%;"></div>
+          <div class="v-led v-led-green" style="left: 56.0%; top: 77.0%;"></div>
+          <div class="v-led v-led-green" style="left: 77.0%; top: 64.5%;"></div>
+          <div class="v-led v-led-blue"  style="left: 83.2%; top: 66.0%;"></div>
+          <div class="v-cat" style="left: 23.5%; top: 78.5%; width: 4.4%; height: 4.4%;"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROOM 1: PM / Tech Lead (Floor 2 Top Left)   -->
+        <!-- ========================================== -->
+        <div id="sign-pm" class="dept-signboard is-standby" style="left: 13.5%; top: 7.5%;" onclick="openAgentInspector('pm-lead')">
+          <div class="dept-icon-box bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </div>
+          <div class="dept-info">
+            <span class="dept-title text-blue-700 dark:text-blue-300">01 PLANNING // LEAD</span>
+            <span class="dept-sub"><span id="model-pm" class="model-badge-primary">[OPUS 5.5]</span> <span>Sprint & Queue</span></span>
+          </div>
+          <div id="pill-pm" class="dept-status-pill pill-standby">
+            <span class="pill-dot w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span class="pill-text">IDLE</span>
+          </div>
+        </div>
+
+        <div id="room-pm" class="room-overlay room-dark" style="left: 12.0%; top: 6.5%; width: 29.5%; height: 43.0%;" onclick="openAgentInspector('pm-lead')">
+          <div id="zzz-pm" class="sleep-indicator" style="left: 48%; top: 48%;">STANDBY</div>
+          <div class="desk-screen-glow" style="left: 46%; top: 48%; width: 35px; height: 25px;"></div>
+          <div class="desk-typing-spark" style="left: 48%; top: 52%;">LEAD // DISPATCH</div>
+          <div id="banner-pm" class="task-banner hidden" style="left: 50%; top: 72%; transform: translateX(-50%);">
+            <div class="task-banner-inner border-blue-500 dark:border-blue-400/60" id="task-text-pm">
+              Reviewing sprint specifications
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROOM 2: System Architect (Floor 2 Top Mid)  -->
+        <!-- ========================================== -->
+        <div id="sign-arch" class="dept-signboard is-standby" style="left: 41.5%; top: 23.5%;" onclick="openAgentInspector('architect')">
+          <div class="dept-icon-box bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.9a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+          </div>
+          <div class="dept-info">
+            <span class="dept-title text-purple-700 dark:text-purple-300">02 ARCHITECTURE // LAB</span>
+            <span class="dept-sub"><span id="model-arch" class="model-badge-primary">[OPUS 5.5]</span> <span>Blueprints & Specs</span></span>
+          </div>
+          <div id="pill-arch" class="dept-status-pill pill-standby">
+            <span class="pill-dot w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span class="pill-text">IDLE</span>
+          </div>
+        </div>
+
+        <div id="room-arch" class="room-overlay room-dark" style="left: 40.5%; top: 22.5%; width: 22.5%; height: 36.0%;" onclick="openAgentInspector('architect')">
+          <div id="zzz-arch" class="sleep-indicator" style="left: 52%; top: 42%;">STANDBY</div>
+          <div class="desk-screen-glow" style="left: 52%; top: 45%; width: 40px; height: 30px;"></div>
+          <div class="desk-typing-spark" style="left: 53%; top: 48%;">ARCH // SPEC</div>
+          <div id="banner-arch" class="task-banner hidden" style="left: 50%; top: 70%; transform: translateX(-50%);">
+            <div class="task-banner-inner border-purple-500 dark:border-purple-400/60" id="task-text-arch">
+              Synthesizing schema & contracts
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROOM 3: QA Tester (Floor 2 Top Right)       -->
+        <!-- ========================================== -->
+        <div id="sign-qa" class="dept-signboard is-standby" style="left: 63.5%; top: 13.5%;" onclick="openAgentInspector('qa-tester')">
+          <div class="dept-icon-box bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <div class="dept-info">
+            <span class="dept-title text-cyan-800 dark:text-cyan-300">03 QUALITY // ASSURANCE</span>
+            <span class="dept-sub"><span id="model-qa" class="model-badge-primary">[FLASH 3.8]</span> <span>Validation Lab</span></span>
+          </div>
+          <div id="pill-qa" class="dept-status-pill pill-standby">
+            <span class="pill-dot w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span class="pill-text">IDLE</span>
+          </div>
+        </div>
+
+        <div id="room-qa" class="room-overlay room-dark" style="left: 62.5%; top: 12.5%; width: 25.5%; height: 39.0%;" onclick="openAgentInspector('qa-tester')">
+          <div id="zzz-qa" class="sleep-indicator" style="left: 44%; top: 38%;">STANDBY</div>
+          <div class="desk-screen-glow" style="left: 45%; top: 42%; width: 45px; height: 30px;"></div>
+          <div class="desk-typing-spark" style="left: 46%; top: 46%;">TEST // VALID</div>
+          <div id="banner-qa" class="task-banner hidden" style="left: 50%; top: 72%; transform: translateX(-50%);">
+            <div class="task-banner-inner border-cyan-500 dark:border-cyan-400/60" id="task-text-qa">
+              Integration testing execution
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROOM 4: Frontend Specialist (Floor 1 Bot Left) -->
+        <!-- ========================================== -->
+        <div id="sign-front" class="dept-signboard is-standby" style="left: 10.5%; top: 48.0%;" onclick="openAgentInspector('frontend-dev')">
+          <div class="dept-icon-box bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          </div>
+          <div class="dept-info">
+            <span class="dept-title text-rose-700 dark:text-rose-300">04 CLIENT // UI STUDIO</span>
+            <span class="dept-sub"><span id="model-front" class="model-badge-primary">[SONNET 5.5]</span> <span>UI & Components</span></span>
+          </div>
+          <div id="pill-front" class="dept-status-pill pill-standby">
+            <span class="pill-dot w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span class="pill-text">IDLE</span>
+          </div>
+        </div>
+
+        <div id="room-front" class="room-overlay room-dark" style="left: 9.5%; top: 47.0%; width: 26.5%; height: 45.0%;" onclick="openAgentInspector('frontend-dev')">
+          <div id="zzz-front" class="sleep-indicator" style="left: 45%; top: 36%;">STANDBY</div>
+          <div class="desk-screen-glow" style="left: 48%; top: 40%; width: 45px; height: 32px;"></div>
+          <div class="desk-typing-spark" style="left: 49%; top: 44%;">UI // COMPONENT</div>
+          <div id="banner-front" class="task-banner hidden" style="left: 50%; top: 68%; transform: translateX(-50%);">
+            <div class="task-banner-inner border-rose-500 dark:border-rose-400/60" id="task-text-front">
+              Component tree optimization
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROOM 5: Backend Specialist (Floor 1 Bot Mid) -->
+        <!-- ========================================== -->
+        <div id="sign-back" class="dept-signboard is-standby" style="left: 36.5%; top: 57.0%;" onclick="openAgentInspector('backend-dev')">
+          <div class="dept-icon-box bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+          </div>
+          <div class="dept-info">
+            <span class="dept-title text-emerald-700 dark:text-emerald-300">05 CORE // ENGINE</span>
+            <span class="dept-sub"><span id="model-back" class="model-badge-primary">[SONNET 5.5]</span> <span>API & Database</span></span>
+          </div>
+          <div id="pill-back" class="dept-status-pill pill-standby">
+            <span class="pill-dot w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span class="pill-text">IDLE</span>
+          </div>
+        </div>
+
+        <div id="room-back" class="room-overlay room-dark" style="left: 35.5%; top: 56.0%; width: 27.5%; height: 43.0%;" onclick="openAgentInspector('backend-dev')">
+          <div id="zzz-back" class="sleep-indicator" style="left: 48%; top: 44%;">STANDBY</div>
+          <div class="desk-screen-glow" style="left: 48%; top: 48%; width: 40px; height: 28px;"></div>
+          <div class="desk-typing-spark" style="left: 50%; top: 52%;">CORE // ROUTE</div>
+          <div id="banner-back" class="task-banner hidden" style="left: 50%; top: 76%; transform: translateX(-50%);">
+            <div class="task-banner-inner border-emerald-500 dark:border-emerald-400/60" id="task-text-back">
+              Data queries & transaction handling
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ROOM 6: DevOps & Security (Floor 1 Bot Right) -->
+        <!-- ========================================== -->
+        <div id="sign-ops" class="dept-signboard is-standby" style="left: 66.5%; top: 50.0%;" onclick="openAgentInspector('devops-sec')">
+          <div class="dept-icon-box bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+          </div>
+          <div class="dept-info">
+            <span class="dept-title text-indigo-700 dark:text-indigo-300">06 CLOUD // SECURITY</span>
+            <span class="dept-sub"><span id="model-ops" class="model-badge-primary">[ARGON 4]</span> <span>CI/CD & Security</span></span>
+          </div>
+          <div id="pill-ops" class="dept-status-pill pill-standby">
+            <span class="pill-dot w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span class="pill-text">IDLE</span>
+          </div>
+        </div>
+
+        <div id="room-ops" class="room-overlay room-dark" style="left: 65.5%; top: 49.0%; width: 28.5%; height: 44.0%;" onclick="openAgentInspector('devops-sec')">
+          <div id="zzz-ops" class="sleep-indicator" style="left: 49%; top: 38%;">STANDBY</div>
+          <div class="desk-screen-glow" style="left: 50%; top: 42%; width: 45px; height: 32px;"></div>
+          <div class="desk-typing-spark" style="left: 51%; top: 46%;">OPS // DEPLOY</div>
+          <div id="banner-ops" class="task-banner hidden" style="left: 50%; top: 70%; transform: translateX(-50%);">
+            <div class="task-banner-inner border-indigo-500 dark:border-indigo-400/60" id="task-text-ops">
+              Pipeline validation & audit
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 🖥️ ENTERPRISE AUDIT STREAM CONSOLE (ZERO-EMOJI CLI)       -->
+    <!-- ========================================================= -->
+    <footer class="border rounded-xl p-3 sm:p-4 shadow-sm transition-colors" style="background-color: var(--bg-card); border-color: var(--border-color);">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 mb-2 border-b gap-2" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-mono font-bold uppercase tracking-wider" style="color: var(--text-muted);">
+            AUDIT LOG STREAM
+          </span>
+          <span id="log-count-badge" class="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/30">
+            ● 0 EVENTS
+          </span>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="flex items-center gap-1 flex-wrap text-[11px] font-mono font-bold">
+          <button onclick="setLogFilter('all')" id="filter-all" class="px-2 py-0.5 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 transition-all">ALL</button>
+          <button onclick="setLogFilter('pm-lead')" id="filter-pm" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all">LEAD</button>
+          <button onclick="setLogFilter('architect')" id="filter-arch" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all">ARCH</button>
+          <button onclick="setLogFilter('frontend-dev')" id="filter-front" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all">FRONT</button>
+          <button onclick="setLogFilter('backend-dev')" id="filter-back" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all">CORE</button>
+          <button onclick="setLogFilter('qa-tester')" id="filter-qa" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all">QA</button>
+          <button onclick="setLogFilter('devops-sec')" id="filter-ops" class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all">OPS</button>
+        </div>
+      </div>
+
+      <div id="log-console" class="font-mono text-xs space-y-1.5 max-h-36 overflow-y-auto p-3 rounded-lg border shadow-inner transition-colors" style="background-color: var(--log-console-bg); border-color: var(--log-console-border); color: var(--log-console-text);">
+        <div class="text-slate-500 font-mono text-[11px]">// Initializing real-time audit stream connection...</div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 🔍 ENTERPRISE AGENT INSPECTOR MODAL                       -->
+  <!-- ========================================================= -->
+  <div id="agent-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden" onclick="closeAgentInspectorOnBackdrop(event)">
+    <div class="w-full max-w-md rounded-xl p-5 shadow-2xl border transition-all" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);" onclick="event.stopPropagation()">
+      <div class="flex items-start justify-between pb-3 border-b" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-3">
+          <div id="modal-icon-box" class="w-10 h-10 rounded-lg flex items-center justify-center border bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          </div>
+          <div>
+            <h3 id="modal-name" class="font-bold text-sm sm:text-base font-mono">@pm-lead // PM / TECH LEAD</h3>
+            <p id="modal-role-desc" class="text-xs text-slate-500 dark:text-slate-400 font-mono">Floor 2 Top Left // Planning Center</p>
+          </div>
+        </div>
+        <button onclick="closeAgentInspector()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-mono text-sm font-bold p-1">
+          ESC
+        </button>
+      </div>
+
+      <div class="space-y-3.5 my-4 text-xs font-mono">
+        <div class="flex items-center justify-between p-2.5 rounded-lg border bg-slate-50 dark:bg-slate-900/60" style="border-color: var(--border-color);">
+          <span class="font-semibold text-slate-500 dark:text-slate-400">TELEMETRY STATUS:</span>
+          <span id="modal-badge" class="px-2 py-0.5 rounded font-bold text-xs bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+            ● VERIFIED // COMPLETED
+          </span>
+        </div>
+
+        <div class="p-2.5 rounded-lg border bg-slate-50 dark:bg-slate-900/60 space-y-2" style="border-color: var(--border-color);">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">AI ENGINE // 3-TIER FAILOVER:</span>
+            <span id="modal-active-model" class="px-2 py-0.5 rounded font-bold text-[11px] bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/30">
+              T1: Claude opus 5.5
+            </span>
+          </div>
+          <div id="modal-tier-cascade" class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            T1: Claude opus 5.5 &rarr; T2: Gemini 4 Argon &rarr; T3: Gpt-oss
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t" style="border-color: var(--border-color);">
+            <span class="text-[10px] text-slate-400">SIMULATE LIMIT FAILOVER:</span>
+            <div class="flex items-center gap-1">
+              <button onclick="setModalModelTier(1)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-600 hover:bg-sky-500 text-white transition-all">T1 PRIMARY</button>
+              <button onclick="setModalModelTier(2)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-600 hover:bg-amber-500 text-white transition-all">T2 FAILOVER</button>
+              <button onclick="setModalModelTier(3)" class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-600 hover:bg-rose-500 text-white transition-all">T3 EMERGENCY</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span class="font-bold text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">ASSIGNED SPECIFICATION:</span>
+          <div id="modal-task" class="p-2.5 rounded-lg border font-mono text-xs leading-relaxed bg-slate-50 dark:bg-slate-900/40" style="border-color: var(--border-color);">
+            Facilitated 10:00 AM Standup & coordinated 24.x/25.x redesign.
+          </div>
+        </div>
+
+        <div>
+          <span class="font-bold text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">SYSTEM DIALOGUE // AUDIT LOG:</span>
+          <div id="modal-dialogue" class="p-2.5 rounded-lg border font-mono text-xs leading-relaxed bg-blue-500/5 text-blue-900 dark:text-blue-300 border-blue-500/20">
+            "Specification verified and committed."
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t flex items-center justify-between gap-2" style="border-color: var(--border-color);">
+        <span class="text-[10px] font-mono font-semibold text-slate-400">MANUAL OVERRIDE:</span>
+        <div class="flex items-center gap-1.5 font-mono text-xs font-bold">
+          <button onclick="setModalAgentState('working')" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all">
+            RUN
+          </button>
+          <button onclick="setModalAgentState('done')" class="px-2.5 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white shadow-sm transition-all">
+            VERIFY
+          </button>
+          <button onclick="setModalAgentState('idle')" class="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 shadow-sm transition-all">
+            IDLE
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- 📋 DAILY OUTCOME TRACKING MODAL (1-CLICK COPY)            -->
+  <!-- ========================================================= -->
+  <div id="outcome-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden" onclick="closeOutcomeModalOnBackdrop(event)">
+    <div class="w-full max-w-2xl rounded-xl p-5 shadow-2xl border transition-all max-h-[90vh] flex flex-col" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);" onclick="event.stopPropagation()">
+      <div class="flex items-start justify-between pb-3 border-b" style="border-color: var(--border-color);">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center border bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm sm:text-base font-mono">DAILY OUTCOME TRACKING REPORT</h3>
+            <p id="outcome-date-sub" class="text-xs text-slate-500 dark:text-slate-400 font-mono">สรุปผลงานประจำวัน สำหรับกรอก Timesheet / Jira / รายงานประจำวัน</p>
+          </div>
+        </div>
+        <button onclick="closeOutcomeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-mono text-sm font-bold p-1">
+          ESC
+        </button>
+      </div>
+
+      <!-- Format Switcher Tabs -->
+      <div class="flex items-center justify-between gap-2 pt-3 pb-2">
+        <div class="flex items-center gap-1 font-mono text-xs font-bold">
+          <button onclick="switchOutcomeTab('standard')" id="tab-outcome-std" class="px-2.5 py-1 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-sm transition-all">STANDARD</button>
+          <button onclick="switchOutcomeTab('executive')" id="tab-outcome-exec" class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">EXECUTIVE 3-LINE</button>
+          <button onclick="switchOutcomeTab('english')" id="tab-outcome-eng" class="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">ENGLISH JIRA</button>
+        </div>
+        <button onclick="copyCurrentOutcomeText()" id="btn-copy-outcome" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold shadow-sm transition-all flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          <span id="copy-btn-text">COPY REPORT</span>
+        </button>
+      </div>
+
+      <!-- Text Container -->
+      <div class="flex-1 overflow-y-auto my-2">
+        <textarea id="outcome-textarea" readonly class="w-full h-80 p-3 rounded-lg border font-mono text-xs leading-relaxed resize-none focus:outline-none" style="background-color: var(--log-console-bg); border-color: var(--border-color); color: var(--text-main);"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTheme = localStorage.getItem('office_theme') || 'dark';
+    let animationsEnabled = localStorage.getItem('office_anim') !== 'false';
+    let soundEnabled = localStorage.getItem('office_sound') === 'true';
+    let lastReceivedState = null;
+    let selectedAgentKey = null;
+    let currentLogFilter = 'all';
+    let audioCtx = null;
+
+    // Web Audio Synthesized Chimes
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playChime(type) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if (type === 'work') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.06);
+          osc.frequency.setValueAtTime(783.99, now + 0.12);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'done') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.setValueAtTime(880.00, now + 0.08);
+          osc.frequency.setValueAtTime(1174.66, now + 0.16);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        } else if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('office_sound', soundEnabled);
+      const text = document.getElementById('sound-text');
+      const box = document.getElementById('sound-icon-box');
+      if (soundEnabled) {
+        text.innerText = 'AUDIO ON';
+        box.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+        playChime('click');
+      } else {
+        text.innerText = 'AUDIO OFF';
+        box.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>';
+      }
+    }
+
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const text = document.getElementById('theme-text');
+      const box = document.getElementById('theme-icon-box');
+      
+      if (theme === 'light') {
+        html.classList.remove('dark');
+        text.innerText = 'LIGHT';
+        box.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+      } else {
+        html.classList.add('dark');
+        text.innerText = 'DARK';
+        box.innerHTML = '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+      }
+      currentTheme = theme;
+      localStorage.setItem('office_theme', theme);
+
+      if (lastReceivedState) {
+        renderState(lastReceivedState);
+      }
+    }
+
+    function toggleTheme() {
+      playChime('click');
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    }
+
+    function toggleAnimationDetails() {
+      playChime('click');
+      animationsEnabled = !animationsEnabled;
+      const layers = document.getElementById('ambient-layers');
+      const text = document.getElementById('anim-text');
+
+      if (animationsEnabled) {
+        layers.style.display = 'block';
+        text.innerText = 'FX ON';
+      } else {
+        layers.style.display = 'none';
+        text.innerText = 'FX OFF';
+      }
+      localStorage.setItem('office_anim', animationsEnabled);
+    }
+
+    const agentMetadata = {
+      'pm-lead': { 
+        name: 'PM // TECH LEAD', 
+        roomName: 'Floor 2 Top Left // Planning Center', 
+        codeTitle: '01 PLANNING // LEAD',
+        tag: 'LEAD',
+        tier1: { name: 'Claude opus 5.5', short: 'OPUS 5.5' },
+        tier2: { name: 'Gemini 4 Argon', short: 'ARGON 4' },
+        tier3: { name: 'Claude sonnet 5.5', short: 'SONNET 5.5' },
+        modelEl: 'model-pm',
+        room: 'room-pm', sign: 'sign-pm', pill: 'pill-pm', zzz: 'zzz-pm', banner: 'banner-pm', taskText: 'task-text-pm' 
+      },
+      'architect': { 
+        name: 'SYSTEM ARCHITECT', 
+        roomName: 'Floor 2 Top Mid // Architecture Lab', 
+        codeTitle: '02 ARCHITECTURE // LAB',
+        tag: 'ARCH',
+        tier1: { name: 'Claude opus 5.5', short: 'OPUS 5.5' },
+        tier2: { name: 'Gemini 4 Argon', short: 'ARGON 4' },
+        tier3: { name: 'Gpt-oss', short: 'GPT-OSS' },
+        modelEl: 'model-arch',
+        room: 'room-arch', sign: 'sign-arch', pill: 'pill-arch', zzz: 'zzz-arch', banner: 'banner-arch', taskText: 'task-text-arch' 
+      },
+      'qa-tester': { 
+        name: 'QA TESTER', 
+        roomName: 'Floor 2 Top Right // Validation Lab', 
+        codeTitle: '03 QUALITY // ASSURANCE',
+        tag: 'QA',
+        tier1: { name: 'Gemini 3.8 Flash', short: 'FLASH 3.8' },
+        tier2: { name: 'Gpt-oss', short: 'GPT-OSS' },
+        tier3: { name: 'Claude sonnet 5.5', short: 'SONNET 5.5' },
+        modelEl: 'model-qa',
+        room: 'room-qa', sign: 'sign-qa', pill: 'pill-qa', zzz: 'zzz-qa', banner: 'banner-qa', taskText: 'task-text-qa' 
+      },
+      'frontend-dev': { 
+        name: 'FRONTEND SPECIALIST', 
+        roomName: 'Floor 1 Bot Left // Client UI Studio', 
+        codeTitle: '04 CLIENT // UI STUDIO',
+        tag: 'FRONT',
+        tier1: { name: 'Claude sonnet 5.5', short: 'SONNET 5.5' },
+        tier2: { name: 'Gemini 4 Argon', short: 'ARGON 4' },
+        tier3: { name: 'Gemini 3.8 Flash', short: 'FLASH 3.8' },
+        modelEl: 'model-front',
+        room: 'room-front', sign: 'sign-front', pill: 'pill-front', zzz: 'zzz-front', banner: 'banner-front', taskText: 'task-text-front' 
+      },
+      'backend-dev': { 
+        name: 'BACKEND SPECIALIST', 
+        roomName: 'Floor 1 Bot Mid // Core Engine Room', 
+        codeTitle: '05 CORE // ENGINE',
+        tag: 'CORE',
+        tier1: { name: 'Claude sonnet 5.5', short: 'SONNET 5.5' },
+        tier2: { name: 'Gemini 4 Argon', short: 'ARGON 4' },
+        tier3: { name: 'Gpt-oss', short: 'GPT-OSS' },
+        modelEl: 'model-back',
+        room: 'room-back', sign: 'sign-back', pill: 'pill-back', zzz: 'zzz-back', banner: 'banner-back', taskText: 'task-text-back' 
+      },
+      'devops-sec': { 
+        name: 'DEVOPS & SECURITY', 
+        roomName: 'Floor 1 Bot Right // Cloud Security Shield', 
+        codeTitle: '06 CLOUD // SECURITY',
+        tag: 'OPS',
+        tier1: { name: 'Gemini 4 Argon', short: 'ARGON 4' },
+        tier2: { name: 'Claude opus 5.5', short: 'OPUS 5.5' },
+        tier3: { name: 'Gpt-oss', short: 'GPT-OSS' },
+        modelEl: 'model-ops',
+        room: 'room-ops', sign: 'sign-ops', pill: 'pill-ops', zzz: 'zzz-ops', banner: 'banner-ops', taskText: 'task-text-ops' 
+      }
+    };
+
+    function getActiveModelForAgent(roleKey, agentData) {
+      const meta = agentMetadata[roleKey];
+      if (!meta) return { tier: 1, name: 'Gemini 4 Argon', short: 'ARGON 4' };
+      const tier = (agentData && agentData.model_tier) ? parseInt(agentData.model_tier, 10) : 1;
+      const tierObj = tier === 2 ? meta.tier2 : tier === 3 ? meta.tier3 : meta.tier1;
+      return {
+        tier,
+        name: (agentData && agentData.active_model) || tierObj.name,
+        short: (agentData && agentData.model_short) || tierObj.short
+      };
+    }
+
+    function getAgentMode(agent) {
+      if (!agent) return 'idle';
+      const status = (agent.status || '').toLowerCase().trim();
+      const badge = (agent.badge || '');
+
+      if (['done', 'completed', 'success', 'passed', 'finished'].includes(status) ||
+          badge.includes('✅') || badge.toLowerCase().includes('done') || badge.toLowerCase().includes('passed') || badge.toLowerCase().includes('completed')) {
+        return 'done';
+      }
+
+      if (['working', 'active', 'in_progress', 'busy', 'running', 'coding', 'testing', 'designing', 'reviewing'].includes(status) ||
+          badge.includes('🟢') || badge.includes('WORKING') || badge.includes('Active') || badge.includes('Sync') ||
+          badge.includes('Coordinating') || badge.includes('Ready') || badge.includes('Validated') || badge.includes('Audit')) {
+        return 'working';
+      }
+
+      return 'idle';
+    }
+
+    function renderPipeline(state, agentModes, countWorking, countDone, countIdle) {
+      const badgeEl = document.getElementById('phase-badge');
+
+      const pmMode = (agentModes && agentModes['pm-lead']) || 'idle';
+      const archMode = (agentModes && agentModes['architect']) || 'idle';
+      const frontMode = (agentModes && agentModes['frontend-dev']) || 'idle';
+      const backMode = (agentModes && agentModes['backend-dev']) || 'idle';
+      const qaMode = (agentModes && agentModes['qa-tester']) || 'idle';
+      const opsMode = (agentModes && agentModes['devops-sec']) || 'idle';
+
+      const devQaDone = (frontMode === 'done' && backMode === 'done' && qaMode === 'done');
+      const devQaWorking = (frontMode === 'working' || backMode === 'working' || qaMode === 'working');
+
+      const allAgentsDone = (countDone === 6 || (countDone >= 4 && countWorking === 0) || (state && state.phase_index === 5));
+      const allIdle = (countWorking === 0 && countDone === 0);
+
+      const step1Status = (pmMode === 'done' || allAgentsDone) ? 'done' : (pmMode === 'working' ? 'working' : 'idle');
+      const step2Status = (archMode === 'done' || allAgentsDone) ? 'done' : (archMode === 'working' ? 'working' : 'idle');
+      const step3Status = (devQaDone || allAgentsDone) ? 'done' : (devQaWorking ? 'working' : 'idle');
+      const step4Status = (opsMode === 'done' || allAgentsDone) ? 'done' : (opsMode === 'working' ? 'working' : 'idle');
+      const step5Status = allAgentsDone ? 'done' : (step4Status === 'done' && countWorking > 0 ? 'working' : 'idle');
+
+      const steps = [
+        { id: 'step-1', name: '01 PLAN', status: step1Status },
+        { id: 'step-2', name: '02 ARCHITECT', status: step2Status },
+        { id: 'step-3', name: '03 CODE & QA', status: step3Status },
+        { id: 'step-4', name: '04 AUDIT & SEC', status: step4Status },
+        { id: 'step-5', name: '05 RELEASE', status: step5Status }
+      ];
+
+      steps.forEach((s) => {
+        const el = document.getElementById(s.id);
+        if (!el) return;
+        if (s.status === 'done') {
+          el.className = "p-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-mono font-bold transition-all shadow-sm";
+          el.innerText = `${s.name} [OK]`;
+        } else if (s.status === 'working') {
+          el.className = "p-2 rounded-lg border-2 border-blue-500 bg-blue-500/15 text-blue-900 dark:text-blue-300 font-mono font-bold shadow-md animate-pulse transition-all";
+          el.innerText = `${s.name} [RUN]`;
+        } else {
+          el.className = "p-2 rounded-lg border border-[var(--border-color)] bg-slate-100 dark:bg-slate-900/60 text-slate-500 dark:text-slate-500 font-mono font-medium transition-all";
+          el.innerText = s.name;
+        }
+      });
+
+      if (allAgentsDone) {
+        badgeEl.className = "text-[11px] font-mono px-2 py-0.5 rounded font-bold transition-all bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30";
+        badgeEl.innerText = "ALL 5 PIPELINE PHASES VERIFIED";
+      } else if (allIdle) {
+        badgeEl.className = "text-[11px] font-mono px-2 py-0.5 rounded font-bold transition-all bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700";
+        badgeEl.innerText = "STANDBY // AWAITING DIRECTIVE";
+      } else {
+        badgeEl.className = "text-[11px] font-mono px-2 py-0.5 rounded font-bold transition-all bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/30";
+        badgeEl.innerText = (state && state.active_phase) || "PIPELINE EXECUTION IN PROGRESS";
+      }
+    }
+
+    function applyAgentState(roleKey, mode, dialogue, badgeText, agentData) {
+      const mapping = agentMetadata[roleKey];
+      if (!mapping) return;
+
+      const roomEl = document.getElementById(mapping.room);
+      const signEl = document.getElementById(mapping.sign);
+      const pillEl = document.getElementById(mapping.pill);
+      const bannerEl = document.getElementById(mapping.banner);
+      const taskTextEl = document.getElementById(mapping.taskText);
+      const modelBadgeEl = document.getElementById(mapping.modelEl);
+
+      const modelInfo = getActiveModelForAgent(roleKey, agentData || (lastReceivedState && lastReceivedState.agents && lastReceivedState.agents[roleKey]));
+      const modelTagLabel = modelInfo.tier > 1 ? `[${modelInfo.short} // T${modelInfo.tier}]` : `[${modelInfo.short}]`;
+
+      if (modelBadgeEl) {
+        modelBadgeEl.className = modelInfo.tier > 1 ? 'model-badge-fallback' : 'model-badge-primary';
+        modelBadgeEl.innerText = modelTagLabel;
+      }
+
+      roomEl.classList.remove('room-dark', 'room-lit', 'room-done', 'is-working-mode', 'is-done-mode');
+      signEl.classList.remove('is-standby', 'is-working', 'is-done');
+
+      if (mode === 'working') {
+        roomEl.classList.add('room-lit', 'is-working-mode');
+        signEl.classList.add('is-working');
+
+        pillEl.className = "dept-status-pill pill-working";
+        pillEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span><span>RUNNING</span>';
+
+        bannerEl.classList.remove('hidden');
+        taskTextEl.innerText = `${modelTagLabel} // ${dialogue || 'Active execution in progress'}`;
+
+      } else if (mode === 'done') {
+        roomEl.classList.add('room-done', 'is-done-mode');
+        signEl.classList.add('is-done');
+
+        pillEl.className = "dept-status-pill pill-done";
+        pillEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span><span>VERIFIED</span>';
+
+        bannerEl.classList.remove('hidden');
+        taskTextEl.innerText = `${modelTagLabel} // ${dialogue || badgeText || 'Specification verified'}`;
+
+      } else {
+        roomEl.classList.add('room-dark');
+        signEl.classList.add('is-standby');
+
+        pillEl.className = "dept-status-pill pill-standby";
+        pillEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span><span>IDLE</span>';
+
+        bannerEl.classList.add('hidden');
+      }
+    }
+
+    function renderState(state) {
+      if (!state || !state.agents) return;
+      lastReceivedState = state;
+
+      let countWorking = 0;
+      let countDone = 0;
+      let countIdle = 0;
+      const agentModes = {};
+
+      for (const [key, agent] of Object.entries(state.agents)) {
+        const mode = getAgentMode(agent);
+        agentModes[key] = mode;
+        if (mode === 'working') countWorking++;
+        else if (mode === 'done') countDone++;
+        else countIdle++;
+
+        applyAgentState(key, mode, agent.dialogue || agent.current_task, agent.badge, agent);
+      }
+
+      document.getElementById('count-working').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 ${countWorking > 0 ? 'animate-ping' : ''}"></span><span>ACTIVE: ${countWorking}</span>`;
+      document.getElementById('count-done').innerText = `VERIFIED: ${countDone}`;
+      document.getElementById('count-idle').innerText = `IDLE: ${countIdle}`;
+
+      renderPipeline(state, agentModes, countWorking, countDone, countIdle);
+
+      const sessionBadgeEl = document.getElementById('session-model-badge');
+      if (sessionBadgeEl) {
+        const activeModels = [];
+        for (const [k, ag] of Object.entries(state.agents)) {
+          if (agentModes[k] === 'working') {
+            const mInfo = getActiveModelForAgent(k, ag);
+            activeModels.push(`@${agentMetadata[k]?.tag || k}:${mInfo.short}${mInfo.tier > 1 ? `(T${mInfo.tier})` : ''}`);
+          }
+        }
+        const uiPrimary = state.session_model ? `UI:${state.session_model.short}` : 'HOOKS:ACTIVE';
+        if (activeModels.length > 0) {
+          sessionBadgeEl.className = "px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/40";
+          sessionBadgeEl.innerText = `${uiPrimary} // ACTIVE ENGINES: ${activeModels.join(' | ')}`;
+        } else {
+          sessionBadgeEl.className = "px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700";
+          sessionBadgeEl.innerText = `${uiPrimary} // AUTO-ROUTER STANDBY (OPUS 5.5 • SONNET 5.5 • ARGON 4 • FLASH 3.8)`;
+        }
+      }
+
+      // Prompt Directive HUD
+      if (state.prompt_tracker) {
+        const pt = state.prompt_tracker;
+        const badgeEl = document.getElementById('prompt-status-badge');
+        const textEl = document.getElementById('prompt-status-text');
+        const promptContentEl = document.getElementById('prompt-content-text');
+        const summaryEl = document.getElementById('prompt-summary-text');
+        const timeEl = document.getElementById('prompt-time');
+
+        if (promptContentEl) promptContentEl.innerText = `"${pt.current_prompt || 'NO ACTIVE DIRECTIVE'}"`;
+        if (summaryEl) summaryEl.innerText = pt.summary ? `Summary: ${pt.summary}` : '';
+        if (timeEl) timeEl.innerText = pt.updated_at ? `TIMESTAMP: ${pt.updated_at} UTC+7` : '';
+
+        if (badgeEl && textEl) {
+          if (pt.status === 'in_progress') {
+            badgeEl.className = "px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 animate-pulse";
+            textEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span><span>EXECUTING DIRECTIVE...</span>';
+          } else if (pt.status === 'completed') {
+            badgeEl.className = "px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30";
+            textEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>DIRECTIVE VERIFIED // COMPLETED</span>';
+          } else {
+            badgeEl.className = "px-2 py-0.5 rounded font-mono text-[11px] font-bold flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700";
+            textEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span><span>STANDBY // AWAITING DIRECTIVE</span>';
+          }
+        }
+      }
+
+      renderLogs(state.recent_logs);
+    }
+
+    // Clean Clean Terminal Logs (Zero-Emoji)
+    function sanitizeLogText(log) {
+      return log
+        .replace(/[📋📐🔍🎨⚙️🛡️💤🎉💻🚀📢🛠️🧪✨✓●]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function renderLogs(logs) {
+      if (!logs || !Array.isArray(logs)) return;
+      const consoleEl = document.getElementById('log-console');
+      const badgeEl = document.getElementById('log-count-badge');
+
+      let filtered = logs;
+      if (currentLogFilter !== 'all') {
+        filtered = logs.filter(l => l.includes(`@${currentLogFilter}`));
+      }
+
+      badgeEl.innerText = `● ${filtered.length} EVENTS`;
+
+      if (filtered.length === 0) {
+        consoleEl.innerHTML = `<div class="text-slate-500 font-mono text-[11px]">// No audit entries match selected filter.</div>`;
+        return;
+      }
+
+      consoleEl.innerHTML = filtered.map(rawLog => {
+        const cleanLog = sanitizeLogText(rawLog);
+        let color = 'text-slate-400 font-mono text-[11px]';
+        let prefix = 'INFO';
+        if (rawLog.includes('User')) { color = 'text-blue-400 font-bold font-mono text-[11px]'; prefix = 'DIRECTIVE'; }
+        else if (rawLog.includes('@architect')) { color = 'text-purple-400 font-mono text-[11px]'; prefix = 'ARCH'; }
+        else if (rawLog.includes('@frontend-dev')) { color = 'text-rose-400 font-mono text-[11px]'; prefix = 'FRONT'; }
+        else if (rawLog.includes('@qa-tester')) { color = 'text-cyan-400 font-mono text-[11px]'; prefix = 'QA'; }
+        else if (rawLog.includes('@devops-sec')) { color = 'text-indigo-400 font-mono text-[11px]'; prefix = 'SEC'; }
+        else if (rawLog.includes('@pm-lead')) { color = 'text-emerald-400 font-mono text-[11px]'; prefix = 'LEAD'; }
+
+        return `<div class="${color} flex items-start gap-2 leading-relaxed">
+          <span class="text-slate-600 select-none">&gt;</span>
+          <span>${cleanLog}</span>
+        </div>`;
+      }).join('');
+
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function setLogFilter(filterKey) {
+      playChime('click');
+      currentLogFilter = filterKey;
+
+      const buttons = {
+        'all': 'filter-all',
+        'pm-lead': 'filter-pm',
+        'architect': 'filter-arch',
+        'frontend-dev': 'filter-front',
+        'backend-dev': 'filter-back',
+        'qa-tester': 'filter-qa',
+        'devops-sec': 'filter-ops'
+      };
+
+      for (const [key, btnId] of Object.entries(buttons)) {
+        const btn = document.getElementById(btnId);
+        if (!btn) continue;
+        if (key === filterKey) {
+          btn.className = "px-2 py-0.5 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 transition-all shadow-sm";
+        } else {
+          btn.className = "px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-700 transition-all";
+        }
+      }
+
+      if (lastReceivedState) {
+        renderLogs(lastReceivedState.recent_logs);
+      }
+    }
+
+    function openAgentInspector(agentKey) {
+      playChime('click');
+      selectedAgentKey = agentKey;
+      const meta = agentMetadata[agentKey];
+      if (!meta) return;
+
+      const agentData = (lastReceivedState && lastReceivedState.agents && lastReceivedState.agents[agentKey]) || {};
+      const mode = getAgentMode(agentData);
+
+      document.getElementById('modal-name').innerText = `@${agentKey} // ${meta.name}`;
+      document.getElementById('modal-role-desc').innerText = meta.roomName;
+
+      const badgeEl = document.getElementById('modal-badge');
+      if (mode === 'working') {
+        badgeEl.className = "px-2 py-0.5 rounded font-mono font-bold text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30";
+        badgeEl.innerText = "● RUNNING";
+      } else if (mode === 'done') {
+        badgeEl.className = "px-2 py-0.5 rounded font-mono font-bold text-xs bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30";
+        badgeEl.innerText = "● VERIFIED // COMPLETED";
+      } else {
+        badgeEl.className = "px-2 py-0.5 rounded font-mono font-bold text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700";
+        badgeEl.innerText = "● STANDBY // IDLE";
+      }
+
+      document.getElementById('modal-task').innerText = agentData.current_task || 'Awaiting task assignment in pipeline';
+      document.getElementById('modal-dialogue').innerText = `"${sanitizeLogText(agentData.dialogue || 'Standing by for next directive')}"`;
+
+      const modelInfo = getActiveModelForAgent(agentKey, agentData);
+      const activeModelEl = document.getElementById('modal-active-model');
+      const cascadeEl = document.getElementById('modal-tier-cascade');
+      if (activeModelEl) {
+        if (modelInfo.tier === 1) {
+          activeModelEl.className = "px-2 py-0.5 rounded font-bold text-[11px] bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/30";
+          activeModelEl.innerText = `T1 PRIMARY: ${modelInfo.name}`;
+        } else if (modelInfo.tier === 2) {
+          activeModelEl.className = "px-2 py-0.5 rounded font-bold text-[11px] bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/40";
+          activeModelEl.innerText = `T2 FAILOVER: ${modelInfo.name}`;
+        } else {
+          activeModelEl.className = "px-2 py-0.5 rounded font-bold text-[11px] bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-500/40";
+          activeModelEl.innerText = `T3 EMERGENCY: ${modelInfo.name}`;
+        }
+      }
+      if (cascadeEl) {
+        cascadeEl.innerHTML = `<span class="${modelInfo.tier === 1 ? 'text-sky-600 dark:text-sky-400 font-bold' : ''}">T1: ${meta.tier1.name}</span> &rarr; <span class="${modelInfo.tier === 2 ? 'text-amber-600 dark:text-amber-400 font-bold' : ''}">T2: ${meta.tier2.name}</span> &rarr; <span class="${modelInfo.tier === 3 ? 'text-rose-600 dark:text-rose-400 font-bold' : ''}">T3: ${meta.tier3.name}</span>`;
+      }
+
+      document.getElementById('agent-modal').classList.remove('hidden');
+    }
+
+    function setModalModelTier(tier) {
+      if (!selectedAgentKey) return;
+      playChime('work');
+      const meta = agentMetadata[selectedAgentKey];
+      if (!meta) return;
+      const tierObj = tier === 2 ? meta.tier2 : tier === 3 ? meta.tier3 : meta.tier1;
+      if (!lastReceivedState) lastReceivedState = { agents: {}, recent_logs: [] };
+      if (!lastReceivedState.agents) lastReceivedState.agents = {};
+      if (!lastReceivedState.agents[selectedAgentKey]) lastReceivedState.agents[selectedAgentKey] = {};
+
+      lastReceivedState.agents[selectedAgentKey].model_tier = tier;
+      lastReceivedState.agents[selectedAgentKey].active_model = tierObj.name;
+      lastReceivedState.agents[selectedAgentKey].model_short = tierObj.short;
+
+      const nowStr = new Date().toTimeString().split(' ')[0];
+      lastReceivedState.recent_logs = lastReceivedState.recent_logs || [];
+      lastReceivedState.recent_logs.push(
+        tier === 1
+          ? `[${nowStr}] @${selectedAgentKey} [${tierObj.short}]: [RESTORED] Restored to Primary Tier 1 (${tierObj.name})`
+          : `[${nowStr}] @${selectedAgentKey} [${tierObj.short} // T${tier} FALLBACK]: [FAILOVER] Auto-switched to Tier ${tier} (${tierObj.name}) due to rate limit`
+      );
+
+      renderState(lastReceivedState);
+      openAgentInspector(selectedAgentKey);
+    }
+
+    function closeAgentInspector() {
+      playChime('click');
+      document.getElementById('agent-modal').classList.add('hidden');
+    }
+
+    function closeAgentInspectorOnBackdrop(e) {
+      if (e.target.id === 'agent-modal') closeAgentInspector();
+    }
+
+    // =========================================================
+    // 📋 OUTCOME TRACKING MODAL & 1-CLICK CLIPBOARD HANDLERS
+    // =========================================================
+    let currentOutcomeTab = 'standard';
+
+    function openOutcomeModal() {
+      playChime('click');
+      const modal = document.getElementById('outcome-modal');
+      const dateSub = document.getElementById('outcome-date-sub');
+
+      const outcomeData = (lastReceivedState && lastReceivedState.daily_outcome) || null;
+      if (outcomeData && dateSub && outcomeData.date) {
+        dateSub.innerText = `ประจำวันที่ ${outcomeData.date} • อัปเดตล่าสุด ${outcomeData.updated_at || ''}`;
+      }
+
+      switchOutcomeTab(currentOutcomeTab || 'standard');
+      modal.classList.remove('hidden');
+    }
+
+    function closeOutcomeModal() {
+      playChime('click');
+      document.getElementById('outcome-modal').classList.add('hidden');
+    }
+
+    function closeOutcomeModalOnBackdrop(e) {
+      if (e.target.id === 'outcome-modal') closeOutcomeModal();
+    }
+
+    function switchOutcomeTab(tab) {
+      playChime('click');
+      currentOutcomeTab = tab;
+
+      const btnStd = document.getElementById('tab-outcome-std');
+      const btnExec = document.getElementById('tab-outcome-exec');
+      const btnEng = document.getElementById('tab-outcome-eng');
+      const textarea = document.getElementById('outcome-textarea');
+
+      [btnStd, btnExec, btnEng].forEach(b => {
+        if (b) b.className = "px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all";
+      });
+
+      const outcomeData = (lastReceivedState && lastReceivedState.daily_outcome) || {};
+
+      if (tab === 'standard') {
+        if (btnStd) btnStd.className = "px-2.5 py-1 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-sm transition-all";
+        textarea.value = outcomeData.standard || "// กำลังโหลดข้อมูล Outcome ประจำวัน...";
+      } else if (tab === 'executive') {
+        if (btnExec) btnExec.className = "px-2.5 py-1 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-sm transition-all";
+        textarea.value = outcomeData.executive || "// กำลังโหลดข้อมูล Outcome ประจำวัน...";
+      } else if (tab === 'english') {
+        if (btnEng) btnEng.className = "px-2.5 py-1 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-sm transition-all";
+        textarea.value = outcomeData.english || "// Loading daily outcome log...";
+      }
+    }
+
+    function copyCurrentOutcomeText() {
+      const textarea = document.getElementById('outcome-textarea');
+      const btnText = document.getElementById('copy-btn-text');
+      if (!textarea || !textarea.value) return;
+
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        playChime('done');
+        if (btnText) {
+          const original = btnText.innerText;
+          btnText.innerText = "COPIED! ✓";
+          setTimeout(() => { btnText.innerText = original; }, 2000);
+        }
+      }).catch(() => {
+        textarea.select();
+        document.execCommand('copy');
+        playChime('done');
+        if (btnText) {
+          const original = btnText.innerText;
+          btnText.innerText = "COPIED! ✓";
+          setTimeout(() => { btnText.innerText = original; }, 2000);
+        }
+      });
+    }
+
+    function setModalAgentState(mode) {
+      if (!selectedAgentKey) return;
+      playChime(mode === 'working' ? 'work' : mode === 'done' ? 'done' : 'click');
+      
+      let badge = 'STANDBY';
+      let dialogue = 'Dormant standby mode';
+      if (mode === 'working') {
+        badge = 'WORKING';
+        dialogue = 'Executing assigned specification';
+      } else if (mode === 'done') {
+        badge = 'COMPLETED';
+        dialogue = 'Specification verified and tested';
+      }
+
+      applyAgentState(selectedAgentKey, mode, dialogue, badge);
+
+      if (lastReceivedState && lastReceivedState.agents && lastReceivedState.agents[selectedAgentKey]) {
+        lastReceivedState.agents[selectedAgentKey].status = mode;
+        lastReceivedState.agents[selectedAgentKey].badge = badge;
+        lastReceivedState.agents[selectedAgentKey].dialogue = dialogue;
+        openAgentInspector(selectedAgentKey);
+      }
+    }
+
+    // Sprint Pipeline Simulation
+    let isSimulating = false;
+    async function runSprintDemoSimulation() {
+      if (isSimulating) return;
+      isSimulating = true;
+      playChime('work');
+
+      const sequence = [
+        { phase: 1, name: "01 PLAN: @pm-lead convened sprint standup", active: ['pm-lead'], task: "Queue & sprint specification" },
+        { phase: 2, name: "02 ARCH: @architect synthesized blueprint", active: ['architect'], done: ['pm-lead'], task: "API specifications & schema" },
+        { phase: 3, name: "03 CODE: @frontend-dev & @backend-dev active", active: ['frontend-dev', 'backend-dev'], done: ['pm-lead', 'architect'], task: "Implementation & service contracts" },
+        { phase: 3, name: "03 QA: @qa-tester executed test suite", active: ['qa-tester'], done: ['pm-lead', 'architect', 'frontend-dev', 'backend-dev'], task: "Automated regression verification" },
+        { phase: 4, name: "04 SEC: @devops-sec boundary audit", active: ['devops-sec'], done: ['pm-lead', 'architect', 'frontend-dev', 'backend-dev', 'qa-tester'], task: "Security audit & release pipeline" },
+        { phase: 5, name: "05 RELEASE: All 5 phases deployed", active: [], done: ['pm-lead', 'architect', 'frontend-dev', 'backend-dev', 'qa-tester', 'devops-sec'], task: "Full pipeline verified" }
+      ];
+
+      for (const step of sequence) {
+        const demoModes = {};
+        for (const [key] of Object.entries(agentMetadata)) {
+          if (step.active.includes(key)) {
+            demoModes[key] = 'working';
+            applyAgentState(key, 'working', step.task, 'WORKING');
+          } else if (step.done && step.done.includes(key)) {
+            demoModes[key] = 'done';
+            applyAgentState(key, 'done', 'Verified and completed', 'DONE');
+          } else {
+            demoModes[key] = 'idle';
+            applyAgentState(key, 'idle', 'Awaiting next phase', 'IDLE');
+          }
+        }
+        
+        const countWorking = step.active.length;
+        const countDone = step.done ? step.done.length : 0;
+        const countIdle = 6 - countWorking - countDone;
+
+        renderPipeline({ phase_index: step.phase, active_phase: step.name }, demoModes, countWorking, countDone, countIdle);
+        
+        playChime(step.phase === 5 ? 'done' : 'click');
+        await new Promise(r => setTimeout(r, 2000));
+      }
+
+      isSimulating = false;
+      if (lastReceivedState) renderState(lastReceivedState);
+    }
+
+    function initRealtimeSync() {
+      if (window.EventSource && location.protocol.startsWith('http')) {
+        const evtSource = new EventSource('/events');
+        evtSource.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            renderState(data);
+            document.getElementById('sync-status').innerText = 'SYNCED ' + new Date().toLocaleTimeString('en-US', { hour12: false });
+          } catch (err) {}
+        };
+        evtSource.onerror = () => {
+          document.getElementById('sync-status').innerText = 'RECONNECTING...';
+        };
+      } else {
+        setInterval(async () => {
+          try {
+            const res = await fetch('./.agents/state/team_status.json?t=' + Date.now());
+            if (res.ok) {
+              const data = await res.json();
+              renderState(data);
+              document.getElementById('sync-status').innerText = 'SYNCED ' + new Date().toLocaleTimeString('en-US', { hour12: false });
+            }
+          } catch (e) {
+            document.getElementById('sync-status').innerText = 'OFFLINE';
+          }
+        }, 1500);
+      }
+    }
+
+    applyTheme(currentTheme);
+    initRealtimeSync();
+  </script>
+</body>
+</html>
